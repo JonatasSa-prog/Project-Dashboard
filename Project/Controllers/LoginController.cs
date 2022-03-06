@@ -4,11 +4,20 @@ using Project.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using Project.Data;
+using Project.Services;
+using System.Linq;
 
 namespace Project.Controllers
 {
     public class LoginController : Controller
     {
+        private readonly UsuarioService _usuarioService;
+
+        public LoginController(UsuarioService usuarioService)
+        {
+            _usuarioService = usuarioService;
+        }
 
         public IActionResult Index()
         {
@@ -23,7 +32,7 @@ namespace Project.Controllers
         {
             string messager = string.Empty;
             bool is_action = false;
-            string url = string.Empty; ;
+            string url = string.Empty; 
 
             try
             {
@@ -32,16 +41,10 @@ namespace Project.Controllers
                 if (string.IsNullOrWhiteSpace(senha))
                     throw new Exception("Informe a Senha corretamente.");
 
-                if (email == "jonatas.sa.25@gmail.com" && senha == "123456")
+                if (_usuarioService.GetLogin(email,senha))
                 {
 
-                    var user = new Usuario
-                    {
-                        Id = 1,
-                        Email = "jonatas.sa.25@gmail.com",
-                        Senha = "123456",
-                        Nome = "Jonatas Santos Sá"
-                    };
+                    var user = _usuarioService.GetUser(email, senha);
 
                     HttpContext.Session.SetString("SessionUser", JsonConvert.SerializeObject(user));
 
